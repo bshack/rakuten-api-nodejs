@@ -10,22 +10,22 @@ module.exports = function(user, pass, sid, authorization){
          * Access token
          */
         token: null,
-        
+
         /**
          * Session timeout
          */
         timeout: 0,
-        
+
         /**
          * Function to generate the API request
          *
-         * @param string URL 
+         * @param string URL
          * @param function cb
          */
-        getinapi: function(URL, auth, cb) {     
+        getinapi: function(URL, auth, cb) {
             let options = {
                 url: URL,
-                headers: {"Content-Type": "application/xml; charset=UTF-8", "authorization": "Bearer "+ auth}
+                headers: {"Accept": "application/json, text/javascript, */*; q=0.01", "authorization": "Bearer "+ auth}
             };
             
             request(options, (error, response, body) => {
@@ -34,7 +34,7 @@ module.exports = function(user, pass, sid, authorization){
                 });
             });
         },
-        
+
         /**
          * Function to generate application link
          *
@@ -48,21 +48,24 @@ module.exports = function(user, pass, sid, authorization){
                 return encodeURIComponent(k) + "=" + encodeURIComponent(params[k]);
             }).join('&');
 
-            return URLbase + ((URLbase.indexOf("?") >= 0) ? "" : "?") + paramsStr;
+            if(paramsStr)
+                return URLbase + ((URLbase.indexOf("?") >= 0) ? "" : "?") + paramsStr;
+            else
+                return URLbase;
         },
-        
+
         /**
          * Functoin to get access token
-         * 
+         *
          * @param function cb
          */
         createtoken: function(cb){
             var _this = this;
             let now = new Date().getTime()/1000;
-            
+
             if(now > this.timeout || this.timeout == 0 || this.token === null){
                 request.post({
-                    headers: {'content-type' : 'application/x-www-form-urlencoded', "Authorization": authorization},
+                    headers: {'Content-Type' : 'application/x-www-form-urlencoded', "Authorization": authorization},
                     url: 'https://api.rakutenmarketing.com/token',
                     body: "grant_type=password&username=" + user + "&password=" + pass + "&scope=" + sid
                 }, function(error, response, body){
@@ -76,10 +79,10 @@ module.exports = function(user, pass, sid, authorization){
                 return this.token;
             }
         },
-        
+
         /**
          * Function to encode URL
-         * 
+         *
          * @see http://locutus.io/php/url/urlencode/
          * @param str
          * @return str
@@ -88,27 +91,27 @@ module.exports = function(user, pass, sid, authorization){
             str = (str + '');
             return encodeURIComponent(str).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').replace(/\)/g, '%29').replace(/\*/g, '%2A').replace(/%20/g, '+')
         },
-        
+
         /**
          * Get advertiser programs
          *
          * @see https://developers.rakutenmarketing.com/subscribe/apis/info?name=AdvertiserSearch&version=1.0&provider=LinkShare&
-         * @param object params         
+         * @param object params
          * merchantname: Advertiser Name
          * @param function cb
          */
         programs: function(params, cb) {
             var _this = this;
-            
-            this.createtoken(function(token){        
+
+            this.createtoken(function(token){
                 let URL = _this.createurl("https://api.rakutenmarketing.com/advertisersearch/1.0", params);
                 _this.getinapi(URL, token, cb);
             });
         },
-        
+
         /**
          * Get products, including their tracking links
-         * 
+         *
          * @see https://developers.rakutenmarketing.com/subscribe/apis/info?name=ProductSearch&version=1.0&provider=LinkShare#!/productsearch/ProductSearch_get_0
          * @param object params
          * keyword: Search Term to find products with all words specified (e.g. 'DVD' and 'Player')
@@ -125,16 +128,16 @@ module.exports = function(user, pass, sid, authorization){
          */
         product: function(params, cb) {
             var _this = this;
-            
-            this.createtoken(function(token){        
+
+            this.createtoken(function(token){
                 let URL = _this.createurl("https://api.rakutenmarketing.com/coupon/1.0", params);
                 _this.getinapi(URL, token, cb);
             });
         },
-        
+
         /**
          * Get coupons, including their tracking links
-         * 
+         *
          * @see https://developers.rakutenmarketing.com/subscribe/apis/info?name=Coupon&version=1.0&provider=LinkShare
          * @param object params
          * category: Filter by one or more Category IDs (Separate multiple by using the pipe character ['|'])
@@ -148,17 +151,17 @@ module.exports = function(user, pass, sid, authorization){
          */
         coupons: function(params, cb){
             var _this = this;
-            
-            this.createtoken(function(token){        
+
+            this.createtoken(function(token){
                 let URL = _this.createurl("https://api.rakutenmarketing.com/coupon/1.0", params);
                 _this.getinapi(URL, token, cb);
             });
         },
-        
+
         /**
          * Returns basic statistics of clicks, views, leads and sales
-         * 
-         * @param string reportname 
+         *
+         * @param string reportname
          * individual-item-report - Returns a detailed sales by product
          * link-type-report - Returns a sales summary by link type
          * media-optimization-report - Returns sales summary for media optimization
@@ -176,32 +179,32 @@ module.exports = function(user, pass, sid, authorization){
          */
         report: function(reportname, token, startDate, endDate, cb) {
             var _this = this;
-            
-            request("https://ran-reporting.rakutenmarketing.com/pt/reports/" + reportname + "/filters?start_date=" + startDate + "&end_date=" + endDate + "&include_summary=Y&network=8&tz=GMT&date_type=transaction&token=" + token , (error, response, body) => { 
+
+            request("https://ran-reporting.rakutenmarketing.com/pt/reports/" + reportname + "/filters?start_date=" + startDate + "&end_date=" + endDate + "&include_summary=Y&network=8&tz=GMT&date_type=transaction&token=" + token , (error, response, body) => {
                 if(error){
                     cb(error, null);
                 }
                 else{
-                    var CSVConverter = require("csv-string");            
-                    var docs = CSVConverter.parse(body);                    
+                    var CSVConverter = require("csv-string");
+                    var docs = CSVConverter.parse(body);
                     cb(false, docs);
                 }
             });
         },
-        
+
         /**
          * Create tracking links
-         * 
+         *
          * @param string url
          * @param integer adspace
          * @return void
          */
         deeplink: function(url, rid, storeid, cb){
-            request("http://click.linksynergy.com/deeplink?id="+rid+"&mid="+storeid+"&murl=" + this.urlencode(url), (error, response, body) => { 
+            request("http://click.linksynergy.com/deeplink?id="+rid+"&mid="+storeid+"&murl=" + this.urlencode(url), (error, response, body) => {
                 if(error)
-                    cb(error, null);                
+                    cb(error, null);
                 else
-                    cb(false, "http://click.linksynergy.com/deeplink?id="+rid+"&mid="+storeid+"&murl=" + this.urlencode(url));  
+                    cb(false, "http://click.linksynergy.com/deeplink?id="+rid+"&mid="+storeid+"&murl=" + this.urlencode(url));
             });
         }
     }

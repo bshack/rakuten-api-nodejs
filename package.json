@@ -1,20 +1,25 @@
 {
     "name": "rakuten-api",
-    "version": "0.1.8",
+    "version": "0.1.9",
     "description": "API integration with Rakuten",
     "author": "André Ferreira <andrehrf@gmail.com>",
     "main": "index.js",
+    "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/itsimpleapp/rakuten-api-nodejs"
+        "url": "https://github.com/vigiadepreco/rakuten-api-nodejs"
     },
     "bugs": {
-        "url": "https://github.com/itsimpleapp/rakuten-api-nodejs/issues"
+        "url": "https://github.com/vigiadepreco/rakuten-api-nodejs/issues"
     },
-    "homepage": "https://github.com/itsimpleapp/rakuten-api-nodejs",
+    "keywords": [
+        "api",
+        "rakuten",
+        "marketing"
+    ],
+    "homepage": "https://github.com/vigiadepreco/rakuten-api-nodejs",
     "dependencies": {
         "request": "^2.72.0",
-        "xml-jsonify": "^1.0.1",
-        "csv-string": "^2.3.0"
+        "xml-jsonify": "^1.0.1"
     }
 }
