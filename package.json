@@ -1,6 +1,6 @@
 {
     "name": "rakuten-api",
-    "version": "0.1.9",
+    "version": "0.2.0",
     "description": "API integration with Rakuten",
     "author": "André Ferreira <andrehrf@gmail.com>",
     "main": "index.js",
@@ -15,10 +15,12 @@
     "keywords": [
         "api",
         "rakuten",
-        "marketing"
+        "marketing",
+        "linkshare"
     ],
     "homepage": "https://github.com/vigiadepreco/rakuten-api-nodejs",
     "dependencies": {
+        "csv-string": "^3.1.2",
         "request": "^2.72.0",
         "xml-jsonify": "^1.0.1"
     }

@@ -19,9 +19,9 @@ let Rakuten = require("./index.js"),
 
 rakuten.coupons({}, function(err, result){
     console.log(result);
-});
+});*/
 
-rakuten.report("report name", "token", "2016-01-01", "2016-07-16", function(err, result){
+/*rakuten.report("report name", "token", "2016-01-01", "2016-07-16", function(err, result){
     console.log(result);
 });
 
